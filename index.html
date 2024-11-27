@@ -1,0 +1,286 @@
+<html><head><base href="/" />
+<meta charset="UTF-8" />
+<title>Ad Tycoon - Force Them to Watch!</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #1a1a1a;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+    user-select: none;
+  }
+
+  .game-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .tv-screen {
+    width: 400px;
+    height: 300px;
+    background: #000;
+    border: 20px solid #333;
+    border-radius: 10px;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ad {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #fff;
+    text-align: center;
+    animation: adTransition 0.5s;
+  }
+
+  @keyframes adTransition {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .upgrade {
+    background: #444;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .upgrade:hover {
+    background: #555;
+  }
+
+  .stats {
+    background: #333;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+
+  .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  #viewer-rage {
+    width: 100%;
+    height: 20px;
+    background: #500;
+    margin: 10px 0;
+  }
+
+  #rage-meter {
+    height: 100%;
+    background: #f00;
+    width: 0%;
+    transition: 0.3s;
+  }
+
+  .free-upgrade {
+    background: #2d5;
+    color: #000;
+  }
+</style>
+</head>
+<body>
+<div class="game-container">
+  <h1>Ad Tycoon - Force Them to Watch!</h1>
+  
+  <div class="stats">
+    <h2>Revenue: $<span id="money">0</span></h2>
+    <h3>Revenue per Ad: $<span id="revenue-per-ad">1</span></h3>
+    <h3>Viewer Rage:</h3>
+    <div id="viewer-rage">
+      <div id="rage-meter"></div>
+    </div>
+  </div>
+
+  <div class="tv-screen">
+    <div class="ad" id="current-ad">Welcome to TV!</div>
+  </div>
+
+  <div class="controls">
+    <div class="upgrade" id="better-ads">
+      Upgrade Ad Quality ($50)<br>
+      <small>Increases revenue per ad</small>
+    </div>
+    <div class="upgrade" id="faster-ads">
+      Increase Ad Frequency ($100)<br>
+      <small>Shows ads more often</small>
+    </div>
+    <div class="upgrade free-upgrade" id="rage-control">
+      Viewer Manipulation (FREE!)<br>
+      <small>Reduces viewer rage</small>
+    </div>
+    <div class="upgrade" id="subliminal">
+      Subliminal Messages ($500)<br>
+      <small>Makes ads more effective</small>
+    </div>
+  </div>
+</div>
+
+<script>
+const game = {
+  money: 0,
+  revenuePerAd: 1,
+  adInterval: 3000,
+  rageIncrease: 3,
+  rageDecrease: 1,
+  rage: 0,
+  subliminalBonus: 1,
+  freeRageControlUsed: false,
+  
+  ads: [
+    "Buy our amazing product!",
+    "Limited time offer!",
+    "You won't believe these prices!",
+    "Act now while supplies last!",
+    "Don't miss out!",
+    "New and improved formula!",
+    "9 out of 10 doctors recommend!",
+    "The best thing since sliced bread!"
+  ],
+
+  init() {
+    this.loadGame();
+    this.updateDisplay();
+    this.startAdCycle();
+    this.startRageCycle();
+    this.setupUpgrades();
+    this.startAutoSave();
+  },
+
+  saveGame() {
+    const saveData = {
+      money: this.money,
+      revenuePerAd: this.revenuePerAd,
+      adInterval: this.adInterval,
+      rageIncrease: this.rageIncrease,
+      rageDecrease: this.rageDecrease,
+      rage: this.rage,
+      subliminalBonus: this.subliminalBonus,
+      freeRageControlUsed: this.freeRageControlUsed
+    };
+    localStorage.setItem('adTycoonSave', JSON.stringify(saveData));
+  },
+
+  loadGame() {
+    const savedData = localStorage.getItem('adTycoonSave');
+    if (savedData) {
+      const data = JSON.parse(savedData);
+      Object.assign(this, data);
+      
+      const rageControl = document.getElementById('rage-control');
+      if (this.freeRageControlUsed) {
+        rageControl.classList.remove('free-upgrade');
+        rageControl.innerHTML = 'Viewer Manipulation ($200)<br><small>Reduces viewer rage</small>';
+      }
+    }
+  },
+
+  startAutoSave() {
+    setInterval(() => this.saveGame(), 30000);
+  },
+
+  showAd() {
+    const adElement = document.getElementById('current-ad');
+    const randomAd = this.ads[Math.floor(Math.random() * this.ads.length)];
+    adElement.style.animation = 'none';
+    adElement.offsetHeight;
+    adElement.style.animation = null;
+    adElement.textContent = randomAd;
+    
+    this.money += this.revenuePerAd * this.subliminalBonus;
+    this.rage += this.rageIncrease;
+    this.updateDisplay();
+  },
+
+  startAdCycle() {
+    if (this.adCycleInterval) {
+      clearInterval(this.adCycleInterval);
+    }
+    this.adCycleInterval = setInterval(() => this.showAd(), this.adInterval);
+  },
+
+  startRageCycle() {
+    setInterval(() => {
+      this.rage = Math.max(0, this.rage - this.rageDecrease);
+      this.updateDisplay();
+    }, 1000);
+  },
+
+  updateDisplay() {
+    document.getElementById('money').textContent = Math.floor(this.money);
+    document.getElementById('revenue-per-ad').textContent = this.revenuePerAd * this.subliminalBonus;
+    document.getElementById('rage-meter').style.width = `${Math.min(100, this.rage)}%`;
+    
+    const rageControl = document.getElementById('rage-control');
+    if (this.freeRageControlUsed) {
+      rageControl.classList.remove('free-upgrade');
+      rageControl.innerHTML = 'Viewer Manipulation ($200)<br><small>Reduces viewer rage</small>';
+    }
+    
+    if (this.rage >= 100) {
+      alert('Your viewers have had enough! Game Over!');
+      localStorage.removeItem('adTycoonSave');
+      location.reload();
+    }
+  },
+
+  setupUpgrades() {
+    document.getElementById('better-ads').onclick = () => {
+      if (this.money >= 50) {
+        this.money -= 50;
+        this.revenuePerAd += 1;
+        this.updateDisplay();
+      }
+    };
+
+    document.getElementById('faster-ads').onclick = () => {
+      if (this.money >= 100) {
+        this.money -= 100;
+        this.adInterval = Math.max(1000, this.adInterval - 500);
+        this.startAdCycle();
+        this.updateDisplay();
+      }
+    };
+
+    document.getElementById('rage-control').onclick = () => {
+      if (!this.freeRageControlUsed) {
+        this.rageDecrease += 0.5;
+        this.freeRageControlUsed = true;
+        this.updateDisplay();
+      } else if (this.money >= 200) {
+        this.money -= 200;
+        this.rageDecrease += 0.5;
+        this.updateDisplay();
+      }
+    };
+
+    document.getElementById('subliminal').onclick = () => {
+      if (this.money >= 500) {
+        this.money -= 500;
+        this.subliminalBonus *= 1.5;
+        this.updateDisplay();
+      }
+    };
+  }
+};
+
+game.init();
+</script>
+</body></html>
