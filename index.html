@@ -3,96 +3,150 @@
 <title>Ad Tycoon - Force Them to Watch!</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
-    background: #1a1a1a;
-    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #e4e4e4;
     margin: 0;
     padding: 20px;
     user-select: none;
+    min-height: 100vh;
   }
 
   .game-container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    color: #00ff9d;
+    text-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
   }
 
   .tv-screen {
-    width: 400px;
-    height: 300px;
-    background: #000;
-    border: 20px solid #333;
-    border-radius: 10px;
-    margin: 20px auto;
+    width: 500px;
+    height: 350px;
+    background: linear-gradient(to bottom, #000000, #1a1a1a);
+    border: 25px solid #2a2a2a;
+    border-radius: 15px;
+    margin: 30px auto;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    transform: perspective(1000px) rotateX(5deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .ad {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    font-size: 32px;
     color: #fff;
     text-align: center;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
     animation: adTransition 0.5s;
   }
 
   @keyframes adTransition {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { 
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+    }
+    to { 
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
   }
 
   .controls {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin: 20px 0;
+    gap: 20px;
+    margin: 30px 0;
   }
 
   .upgrade {
-    background: #444;
-    padding: 10px;
-    border-radius: 5px;
+    background: linear-gradient(145deg, #2a2a4a 0%, #1a2a3e 100%);
+    padding: 20px;
+    border-radius: 15px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   }
 
   .upgrade:hover {
-    background: #555;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, #3a3a5a 0%, #2a2a4e 100%);
   }
 
   .stats {
-    background: #333;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .stats h2, .stats h3 {
+    margin: 10px 0;
+    color: #00ff9d;
   }
 
   .disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none !important;
   }
 
   #viewer-rage {
     width: 100%;
-    height: 20px;
-    background: #500;
-    margin: 10px 0;
+    height: 25px;
+    background: rgba(255, 0, 0, 0.2);
+    margin: 15px 0;
+    border-radius: 12.5px;
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
   #rage-meter {
     height: 100%;
-    background: #f00;
+    background: linear-gradient(90deg, #ff4d4d, #ff0000);
     width: 0%;
     transition: 0.3s;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
   }
 
   .free-upgrade {
-    background: #2d5;
-    color: #000;
+    background: linear-gradient(145deg, #00803d 0%, #006633 100%);
+    color: #fff;
+  }
+
+  .free-upgrade:hover {
+    background: linear-gradient(145deg, #009947 0%, #00773b 100%);
+  }
+
+  small {
+    display: block;
+    margin-top: 8px;
+    opacity: 0.8;
+    font-size: 0.9em;
   }
 </style>
 </head>
@@ -152,8 +206,30 @@ const game = {
     "Don't miss out!",
     "New and improved formula!",
     "9 out of 10 doctors recommend!",
-    "The best thing since sliced bread!"
+    "The best thing since sliced bread!",
+    "Revolutionary breakthrough!",
+    "As seen on TV!",
+    "Satisfaction guaranteed!",
+    "Buy one, get one free!",
+    "Results may vary!",
+    "Order now and save!",
+    "Clinically proven results!",
+    "Join millions of satisfied customers!",
+    "Experience the difference!",
+    "Change your life today!",
+    "Better than the competition!",
+    "Premium quality guaranteed!"
   ],
+
+  formatNumber(num) {
+    const suffixes = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx'];
+    let suffixIndex = 0;
+    while (num >= 1000 && suffixIndex < suffixes.length - 1) {
+      num /= 1000;
+      suffixIndex++;
+    }
+    return suffixIndex === 0 ? Math.floor(num) : num.toFixed(1) + suffixes[suffixIndex];
+  },
 
   init() {
     this.loadGame();
@@ -224,14 +300,27 @@ const game = {
   },
 
   updateDisplay() {
-    document.getElementById('money').textContent = Math.floor(this.money);
-    document.getElementById('revenue-per-ad').textContent = this.revenuePerAd * this.subliminalBonus;
+    document.getElementById('money').textContent = this.formatNumber(this.money);
+    document.getElementById('revenue-per-ad').textContent = this.formatNumber(this.revenuePerAd * this.subliminalBonus);
     document.getElementById('rage-meter').style.width = `${Math.min(100, this.rage)}%`;
+    
+    // Update upgrade buttons to show formatted numbers
+    document.getElementById('better-ads').innerHTML = `
+      Upgrade Ad Quality ($${this.formatNumber(50)})<br>
+      <small>Increases revenue per ad</small>`;
+    
+    document.getElementById('faster-ads').innerHTML = `
+      Increase Ad Frequency ($${this.formatNumber(100)})<br>
+      <small>Shows ads more often</small>`;
+    
+    document.getElementById('subliminal').innerHTML = `
+      Subliminal Messages ($${this.formatNumber(500)})<br>
+      <small>Makes ads more effective</small>`;
     
     const rageControl = document.getElementById('rage-control');
     if (this.freeRageControlUsed) {
       rageControl.classList.remove('free-upgrade');
-      rageControl.innerHTML = 'Viewer Manipulation ($200)<br><small>Reduces viewer rage</small>';
+      rageControl.innerHTML = `Viewer Manipulation ($${this.formatNumber(200)})<br><small>Reduces viewer rage</small>`;
     }
     
     if (this.rage >= 100) {
