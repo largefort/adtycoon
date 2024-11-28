@@ -34,16 +34,52 @@
     width: 500px;
     height: 350px;
     background: linear-gradient(to bottom, #000000, #1a1a1a);
-    border: 25px solid #2a2a2a;
-    border-radius: 15px;
+    border: 35px solid #2a2a2a;
+    border-radius: 20px;
     margin: 30px auto;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(0, 0, 0, 0.8);
     transform: perspective(1000px) rotateX(5deg);
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .tv-screen::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.1),
+      rgba(0, 0, 0, 0.1) 2px,
+      transparent 2px,
+      transparent 4px
+    );
+    pointer-events: none;
+    animation: scanline 10s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(350px); }
+  }
+
+  .tv-screen::after {
+    content: '';
+    position: absolute;
+    top: -35px;
+    right: -35px;
+    width: 70px;
+    height: 70px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
   .ad {
@@ -60,40 +96,124 @@
     background: rgba(0, 0, 0, 0.7);
     border-radius: 10px;
     animation: adTransition 0.5s;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   @keyframes adTransition {
-    from { 
+    0% { 
       opacity: 0;
-      transform: translate(-50%, -50%) scale(0.8);
+      transform: translate(-50%, -50%) scale(0.8) rotate(-2deg);
     }
-    to { 
+    50% {
+      transform: translate(-50%, -50%) scale(1.1) rotate(1deg);
+    }
+    100% { 
       opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+      transform: translate(-50%, -50%) scale(1) rotate(0deg);
     }
   }
 
   .controls {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin: 30px 0;
+    gap: 25px;
+    margin: 40px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .upgrade {
-    background: linear-gradient(145deg, #2a2a4a 0%, #1a2a3e 100%);
-    padding: 20px;
-    border-radius: 15px;
+    background: linear-gradient(165deg, #2a2a4a 0%, #1a2a3e 100%);
+    padding: 25px;
+    border-radius: 18px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .upgrade:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    transition: 0.5s;
+  }
+
+  .upgrade:hover:before {
+    left: 100%;
   }
 
   .upgrade:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(145deg, #3a3a5a 0%, #2a2a4e 100%);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    border-color: rgba(0, 255, 157, 0.3);
+  }
+
+  .upgrade:active {
+    transform: translateY(-2px) scale(0.98);
+  }
+
+  .upgrade small {
+    display: block;
+    margin-top: 12px;
+    opacity: 0.8;
+    font-size: 0.9em;
+    color: #a0a0a0;
+    transition: color 0.3s ease;
+  }
+
+  .upgrade:hover small {
+    color: #00ff9d;
+  }
+
+  .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    border-color: rgba(255, 0, 0, 0.2);
+  }
+
+  .disabled:hover {
+    transform: none !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 0, 0, 0.2);
+  }
+
+  .free-upgrade {
+    background: linear-gradient(165deg, #006633 0%, #004d26 100%);
+    border-color: rgba(0, 255, 157, 0.2);
+  }
+
+  .free-upgrade:hover {
+    background: linear-gradient(165deg, #00773b 0%, #005c2f 100%);
+    border-color: rgba(0, 255, 157, 0.4);
+  }
+
+  .upgrade::after {
+    content: attr(data-cost);
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    color: #00ff9d;
+    border: 1px solid rgba(0, 255, 157, 0.2);
   }
 
   .stats {
@@ -109,37 +229,50 @@
     color: #00ff9d;
   }
 
-  .disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none !important;
-  }
-
   #viewer-rage {
     width: 100%;
-    height: 25px;
-    background: rgba(255, 0, 0, 0.2);
+    height: 30px;
+    background: rgba(255, 0, 0, 0.1);
     margin: 15px 0;
-    border-radius: 12.5px;
+    border-radius: 15px;
     overflow: hidden;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+    position: relative;
   }
 
   #rage-meter {
     height: 100%;
-    background: linear-gradient(90deg, #ff4d4d, #ff0000);
+    background: linear-gradient(90deg, 
+      #ff4d4d,
+      #ff0000 50%,
+      #cc0000 100%
+    );
     width: 0%;
     transition: 0.3s;
     box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
   }
 
-  .free-upgrade {
-    background: linear-gradient(145deg, #00803d 0%, #006633 100%);
-    color: #fff;
+  #rage-meter::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      transparent 100%
+    );
+    animation: rageGlow 2s ease-in-out infinite;
   }
 
-  .free-upgrade:hover {
-    background: linear-gradient(145deg, #009947 0%, #00773b 100%);
+  @keyframes rageGlow {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
   }
 
   small {
@@ -147,6 +280,57 @@
     margin-top: 8px;
     opacity: 0.8;
     font-size: 0.9em;
+  }
+
+  /* Add to the style section */
+  #leaderboard {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+  }
+
+  .leaderboard-entry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .leaderboard-entry:last-child {
+    border-bottom: none;
+  }
+
+  .player-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #00ff9d;
+  }
+
+  .connected-players {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 20px;
+  }
+
+  .player-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #00ff9d;
+    transition: all 0.3s ease;
+  }
+
+  .player-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(0, 255, 157, 0.5);
   }
 </style>
 </head>
@@ -168,26 +352,31 @@
   </div>
 
   <div class="controls">
-    <div class="upgrade" id="better-ads">
-      Upgrade Ad Quality ($50)<br>
+    <div class="upgrade" id="better-ads" data-cost="$50">
+      Upgrade Ad Quality<br>
       <small>Increases revenue per ad</small>
     </div>
-    <div class="upgrade" id="faster-ads">
-      Increase Ad Frequency ($100)<br>
+    <div class="upgrade" id="faster-ads" data-cost="$100">
+      Increase Ad Frequency<br>
       <small>Shows ads more often</small>
     </div>
-    <div class="upgrade free-upgrade" id="rage-control">
-      Viewer Manipulation (FREE!)<br>
+    <div class="upgrade free-upgrade" id="rage-control" data-cost="FREE!">
+      Viewer Manipulation<br>
       <small>Reduces viewer rage</small>
     </div>
-    <div class="upgrade" id="subliminal">
-      Subliminal Messages ($500)<br>
+    <div class="upgrade" id="subliminal" data-cost="$500">
+      Subliminal Messages<br>
       <small>Makes ads more effective</small>
     </div>
   </div>
+  
+  <div id="leaderboard"></div>
+  <div class="connected-players"></div>
 </div>
 
 <script>
+const room = new WebsimSocket();
+
 const game = {
   money: 0,
   revenuePerAd: 1,
@@ -231,8 +420,60 @@ const game = {
     return suffixIndex === 0 ? Math.floor(num) : num.toFixed(1) + suffixes[suffixIndex];
   },
 
-  init() {
+  async initMultiplayer() {
+    room.collection('playerState').subscribe((players) => {
+      this.updateLeaderboard(players);
+    });
+
+    await room.collection('playerState').create({
+      money: this.money,
+      revenuePerAd: this.revenuePerAd,
+      rage: this.rage,
+      username: room.party.client.username
+    });
+  },
+
+  async updatePlayerState() {
+    const players = await room.collection('playerState').getList();
+    const myState = players.find(p => p.username === room.party.client.username);
+    
+    if (myState) {
+      await room.collection('playerState').update(myState.id, {
+        money: this.money,
+        revenuePerAd: this.revenuePerAd,
+        rage: this.rage,
+        username: room.party.client.username
+      });
+    }
+  },
+
+  updateLeaderboard(players) {
+    let leaderboardDiv = document.getElementById('leaderboard');
+    if (!leaderboardDiv) {
+      leaderboardDiv = document.createElement('div');
+      leaderboardDiv.id = 'leaderboard';
+      document.querySelector('.stats').appendChild(leaderboardDiv);
+    }
+
+    const sortedPlayers = players.sort((a, b) => b.money - a.money);
+    
+    let html = '<h3>Top Ad Tycoons</h3>';
+    sortedPlayers.forEach(player => {
+      html += `
+        <div class="leaderboard-entry">
+          <img src="https://images.websim.ai/avatar/${player.username}" class="player-avatar">
+          <span>${player.username}</span>
+          <span>$${this.formatNumber(player.money)}</span>
+        </div>
+      `;
+    });
+    
+    leaderboardDiv.innerHTML = html;
+  },
+
+  async init() {
     this.loadGame();
+    await this.initMultiplayer();  // Initialize multiplayer
     this.updateDisplay();
     this.startAdCycle();
     this.startRageCycle();
@@ -304,43 +545,49 @@ const game = {
     document.getElementById('revenue-per-ad').textContent = this.formatNumber(this.revenuePerAd * this.subliminalBonus);
     document.getElementById('rage-meter').style.width = `${Math.min(100, this.rage)}%`;
     
-    // Update upgrade buttons to show formatted numbers
-    document.getElementById('better-ads').innerHTML = `
-      Upgrade Ad Quality ($${this.formatNumber(50)})<br>
-      <small>Increases revenue per ad</small>`;
-    
-    document.getElementById('faster-ads').innerHTML = `
-      Increase Ad Frequency ($${this.formatNumber(100)})<br>
-      <small>Shows ads more often</small>`;
-    
-    document.getElementById('subliminal').innerHTML = `
-      Subliminal Messages ($${this.formatNumber(500)})<br>
-      <small>Makes ads more effective</small>`;
-    
-    const rageControl = document.getElementById('rage-control');
-    if (this.freeRageControlUsed) {
-      rageControl.classList.remove('free-upgrade');
-      rageControl.innerHTML = `Viewer Manipulation ($${this.formatNumber(200)})<br><small>Reduces viewer rage</small>`;
+    const upgrades = {
+      'better-ads': 50,
+      'faster-ads': 100,
+      'subliminal': 500
+    };
+
+    for (const [id, cost] of Object.entries(upgrades)) {
+      const element = document.getElementById(id);
+      if (this.money < cost) {
+        element.classList.add('disabled');
+      } else {
+        element.classList.remove('disabled');
+      }
     }
-    
+
+    const rageControl = document.getElementById('rage-control');
+    if (this.freeRageControlUsed && this.money < 200) {
+      rageControl.classList.add('disabled');
+    } else {
+      rageControl.classList.remove('disabled');
+    }
+
     if (this.rage >= 100) {
       alert('Your viewers have had enough! Game Over!');
       localStorage.removeItem('adTycoonSave');
       location.reload();
     }
+
+    // Update multiplayer state
+    this.updatePlayerState();
   },
 
   setupUpgrades() {
-    document.getElementById('better-ads').onclick = () => {
-      if (this.money >= 50) {
+    document.getElementById('better-ads').onclick = (event) => {
+      if (this.money >= 50 && !event.currentTarget.classList.contains('disabled')) {
         this.money -= 50;
         this.revenuePerAd += 1;
         this.updateDisplay();
       }
     };
 
-    document.getElementById('faster-ads').onclick = () => {
-      if (this.money >= 100) {
+    document.getElementById('faster-ads').onclick = (event) => {
+      if (this.money >= 100 && !event.currentTarget.classList.contains('disabled')) {
         this.money -= 100;
         this.adInterval = Math.max(1000, this.adInterval - 500);
         this.startAdCycle();
@@ -348,20 +595,20 @@ const game = {
       }
     };
 
-    document.getElementById('rage-control').onclick = () => {
+    document.getElementById('rage-control').onclick = (event) => {
       if (!this.freeRageControlUsed) {
         this.rageDecrease += 0.5;
         this.freeRageControlUsed = true;
         this.updateDisplay();
-      } else if (this.money >= 200) {
+      } else if (this.money >= 200 && !event.currentTarget.classList.contains('disabled')) {
         this.money -= 200;
         this.rageDecrease += 0.5;
         this.updateDisplay();
       }
     };
 
-    document.getElementById('subliminal').onclick = () => {
-      if (this.money >= 500) {
+    document.getElementById('subliminal').onclick = (event) => {
+      if (this.money >= 500 && !event.currentTarget.classList.contains('disabled')) {
         this.money -= 500;
         this.subliminalBonus *= 1.5;
         this.updateDisplay();
@@ -369,6 +616,23 @@ const game = {
     };
   }
 };
+
+room.party.subscribe((peers) => {
+  let connectedPlayers = document.querySelector('.connected-players');
+  if (!connectedPlayers) {
+    connectedPlayers = document.createElement('div');
+    connectedPlayers.className = 'connected-players';
+    document.body.appendChild(connectedPlayers);
+  }
+
+  let html = '';
+  for (const clientId in peers) {
+    const peer = peers[clientId];
+    html += `<img src="https://images.websim.ai/avatar/${peer.username}" 
+             class="player-icon" title="${peer.username}" />`;
+  }
+  connectedPlayers.innerHTML = html;
+});
 
 game.init();
 </script>
