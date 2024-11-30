@@ -2,339 +2,492 @@
 <meta charset="UTF-8" />
 <title>Ad Tycoon - Force Them to Watch!</title>
 <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: #e4e4e4;
-    margin: 0;
-    padding: 20px;
-    user-select: none;
-    min-height: 100vh;
-  }
-
-  .game-container {
-    max-width: 900px;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-  }
-
-  h1 {
-    text-align: center;
-    font-size: 2.5em;
-    margin-bottom: 30px;
-    color: #00ff9d;
-    text-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
-  }
-
-  .tv-screen {
-    width: 500px;
-    height: 350px;
-    background: linear-gradient(to bottom, #000000, #1a1a1a);
-    border: 35px solid #2a2a2a;
-    border-radius: 20px;
-    margin: 30px auto;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5),
-                inset 0 0 20px rgba(0, 0, 0, 0.8);
-    transform: perspective(1000px) rotateX(5deg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .tv-screen::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.1),
-      rgba(0, 0, 0, 0.1) 2px,
-      transparent 2px,
-      transparent 4px
-    );
-    pointer-events: none;
-    animation: scanline 10s linear infinite;
-  }
-
-  @keyframes scanline {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(350px); }
-  }
-
-  .tv-screen::after {
-    content: '';
-    position: absolute;
-    top: -35px;
-    right: -35px;
-    width: 70px;
-    height: 70px;
-    background: #1a1a1a;
-    border-radius: 10px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-  }
-
-  .ad {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    font-size: 32px;
-    color: #fff;
-    text-align: center;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 10px;
-    animation: adTransition 0.5s;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  @keyframes adTransition {
-    0% { 
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(0.8) rotate(-2deg);
+    /* Add new loading screen styles */
+    #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        transition: opacity 0.5s;
     }
-    50% {
-      transform: translate(-50%, -50%) scale(1.1) rotate(1deg);
+
+    #loading-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
     }
-    100% { 
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1) rotate(0deg);
+
+    .loading-tv {
+        width: 300px;
+        height: 200px;
+        background: #000;
+        border: 20px solid #2a2a2a;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
     }
-  }
 
-  .controls {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 25px;
-    margin: 40px 0;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-  }
+    .loading-tv::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.1),
+            rgba(0, 0, 0, 0.1) 2px,
+            transparent 2px,
+            transparent 4px
+        );
+        animation: scanline 10s linear infinite;
+    }
 
-  .upgrade {
-    background: linear-gradient(165deg, #2a2a4a 0%, #1a2a3e 100%);
-    padding: 25px;
-    border-radius: 18px;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 2px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
-  }
+    .loading-text {
+        color: #00ff9d;
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+    }
 
-  .upgrade:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.1),
-      transparent
-    );
-    transition: 0.5s;
-  }
+    #loading-progress {
+        width: 300px;
+        height: 30px;
+        background: rgba(255, 0, 0, 0.1);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        position: relative;
+    }
 
-  .upgrade:hover:before {
-    left: 100%;
-  }
+    #loading-meter {
+        height: 100%;
+        background: linear-gradient(90deg, 
+            #ff4d4d,
+            #ff0000 50%,
+            #cc0000 100%
+        );
+        width: 0%;
+        transition: 0.3s;
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        position: relative;
+    }
 
-  .upgrade:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-    border-color: rgba(0, 255, 157, 0.3);
-  }
+    #loading-meter::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.2) 50%,
+            transparent 100%
+        );
+        animation: rageGlow 2s ease-in-out infinite;
+    }
 
-  .upgrade:active {
-    transform: translateY(-2px) scale(0.98);
-  }
+    /* Hide the original game container initially */
+    .game-container {
+        display: none;
+    }
 
-  .upgrade small {
-    display: block;
-    margin-top: 12px;
-    opacity: 0.8;
-    font-size: 0.9em;
-    color: #a0a0a0;
-    transition: color 0.3s ease;
-  }
+    .game-container.visible {
+        display: block;
+    }
 
-  .upgrade:hover small {
-    color: #00ff9d;
-  }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #e4e4e4;
+        margin: 0;
+        padding: 20px;
+        user-select: none;
+        min-height: 100vh;
+    }
 
-  .disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none !important;
-    border-color: rgba(255, 0, 0, 0.2);
-  }
+    .game-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+    }
 
-  .disabled:hover {
-    transform: none !important;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 0, 0, 0.2);
-  }
+    h1 {
+        text-align: center;
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        color: #00ff9d;
+        text-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+    }
 
-  .free-upgrade {
-    background: linear-gradient(165deg, #006633 0%, #004d26 100%);
-    border-color: rgba(0, 255, 157, 0.2);
-  }
+    .tv-screen {
+        width: 500px;
+        height: 350px;
+        background: linear-gradient(to bottom, #000000, #1a1a1a);
+        border: 35px solid #2a2a2a;
+        border-radius: 20px;
+        margin: 30px auto;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.5),
+                    inset 0 0 20px rgba(0, 0, 0, 0.8);
+        transform: perspective(1000px) rotateX(5deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-  .free-upgrade:hover {
-    background: linear-gradient(165deg, #00773b 0%, #005c2f 100%);
-    border-color: rgba(0, 255, 157, 0.4);
-  }
+    .tv-screen::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.1),
+            rgba(0, 0, 0, 0.1) 2px,
+            transparent 2px,
+            transparent 4px
+        );
+        pointer-events: none;
+        animation: scanline 10s linear infinite;
+    }
 
-  .upgrade::after {
-    content: attr(data-cost);
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 5px 10px;
-    border-radius: 10px;
-    font-size: 0.8em;
-    color: #00ff9d;
-    border: 1px solid rgba(0, 255, 157, 0.2);
-  }
+    @keyframes scanline {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(350px); }
+    }
 
-  .stats {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 25px;
-    border-radius: 15px;
-    margin-bottom: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+    .tv-screen::after {
+        content: '';
+        position: absolute;
+        top: -35px;
+        right: -35px;
+        width: 70px;
+        height: 70px;
+        background: #1a1a1a;
+        border-radius: 10px;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    }
 
-  .stats h2, .stats h3 {
-    margin: 10px 0;
-    color: #00ff9d;
-  }
+    .ad {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        font-size: 32px;
+        color: #fff;
+        text-align: center;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 10px;
+        animation: adTransition 0.5s;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-  #viewer-rage {
-    width: 100%;
-    height: 30px;
-    background: rgba(255, 0, 0, 0.1);
-    margin: 15px 0;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
-    position: relative;
-  }
+    @keyframes adTransition {
+        0% { 
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8) rotate(-2deg);
+        }
+        50% {
+            transform: translate(-50%, -50%) scale(1.1) rotate(1deg);
+        }
+        100% { 
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        }
+    }
 
-  #rage-meter {
-    height: 100%;
-    background: linear-gradient(90deg, 
-      #ff4d4d,
-      #ff0000 50%,
-      #cc0000 100%
-    );
-    width: 0%;
-    transition: 0.3s;
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-    position: relative;
-    overflow: hidden;
-  }
+    .controls {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+        margin: 40px 0;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
 
-  #rage-meter::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.2) 50%,
-      transparent 100%
-    );
-    animation: rageGlow 2s ease-in-out infinite;
-  }
+    .upgrade {
+        background: linear-gradient(165deg, #2a2a4a 0%, #1a2a3e 100%);
+        padding: 25px;
+        border-radius: 18px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 2px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
 
-  @keyframes rageGlow {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
+    .upgrade:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent
+        );
+        transition: 0.5s;
+    }
 
-  small {
-    display: block;
-    margin-top: 8px;
-    opacity: 0.8;
-    font-size: 0.9em;
-  }
+    .upgrade:hover:before {
+        left: 100%;
+    }
 
-  /* Add to the style section */
-  #leaderboard {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-  }
+    .upgrade:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        border-color: rgba(0, 255, 157, 0.3);
+    }
 
-  .leaderboard-entry {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
+    .upgrade:active {
+        transform: translateY(-2px) scale(0.98);
+    }
 
-  .leaderboard-entry:last-child {
-    border-bottom: none;
-  }
+    .upgrade small {
+        display: block;
+        margin-top: 12px;
+        opacity: 0.8;
+        font-size: 0.9em;
+        color: #a0a0a0;
+        transition: color 0.3s ease;
+    }
 
-  .player-avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 2px solid #00ff9d;
-  }
+    .upgrade:hover small {
+        color: #00ff9d;
+    }
 
-  .connected-players {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 10px;
-    border-radius: 20px;
-  }
+    .disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        border-color: rgba(255, 0, 0, 0.2);
+    }
 
-  .player-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid #00ff9d;
-    transition: all 0.3s ease;
-  }
+    .disabled:hover {
+        transform: none !important;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 0, 0, 0.2);
+    }
 
-  .player-icon:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(0, 255, 157, 0.5);
-  }
+    .free-upgrade {
+        background: linear-gradient(165deg, #006633 0%, #004d26 100%);
+        border-color: rgba(0, 255, 157, 0.2);
+    }
+
+    .free-upgrade:hover {
+        background: linear-gradient(165deg, #00773b 0%, #005c2f 100%);
+        border-color: rgba(0, 255, 157, 0.4);
+    }
+
+    .upgrade::after {
+        content: attr(data-cost);
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 5px 10px;
+        border-radius: 10px;
+        font-size: 0.8em;
+        color: #00ff9d;
+        border: 1px solid rgba(0, 255, 157, 0.2);
+    }
+
+    .stats {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stats h2, .stats h3 {
+        margin: 10px 0;
+        color: #00ff9d;
+    }
+
+    #viewer-rage {
+        width: 100%;
+        height: 30px;
+        background: rgba(255, 0, 0, 0.1);
+        margin: 15px 0;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        position: relative;
+    }
+
+    #rage-meter {
+        height: 100%;
+        background: linear-gradient(90deg, 
+            #ff4d4d,
+            #ff0000 50%,
+            #cc0000 100%
+        );
+        width: 0%;
+        transition: 0.3s;
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+    }
+
+    #rage-meter::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.2) 50%,
+            transparent 100%
+        );
+        animation: rageGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes rageGlow {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    small {
+        display: block;
+        margin-top: 8px;
+        opacity: 0.8;
+        font-size: 0.9em;
+    }
+
+    /* Add new styles for multiplayer elements */
+    .multiplayer-container {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        border-radius: 15px;
+        margin: 20px 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-container {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 15px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .chat-messages {
+        margin-bottom: 10px;
+    }
+
+    .chat-message {
+        padding: 8px;
+        margin: 5px 0;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .chat-input {
+        display: flex;
+        gap: 10px;
+    }
+
+    .chat-input input {
+        flex: 1;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(0, 0, 0, 0.2);
+        color: #fff;
+    }
+
+    .chat-input button {
+        padding: 8px 15px;
+        border-radius: 5px;
+        border: none;
+        background: #00ff9d;
+        color: #1a1a2e;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .chat-input button:hover {
+        background: #00cc7d;
+    }
+
+    .peer-id {
+        color: #00ff9d;
+        font-family: monospace;
+        margin: 10px 0;
+    }
+
+    .connection-controls {
+        display: flex;
+        gap: 10px;
+        margin: 10px 0;
+    }
+
+    .connection-controls input {
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(0, 0, 0, 0.2);
+        color: #fff;
+    }
+
+    .connection-controls button {
+        padding: 8px 15px;
+        border-radius: 5px;
+        border: none;
+        background: #00ff9d;
+        color: #1a1a2e;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .connection-controls button:hover {
+        background: #00cc7d;
+    }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.4.7/dist/peerjs.min.js"></script>
 </head>
 <body>
+<div id="loading-screen">
+    <div class="loading-tv"></div>
+    <div class="loading-text">Connecting to Ad Tycoon Network...</div>
+    <div id="loading-progress">
+        <div id="loading-meter"></div>
+    </div>
+</div>
 <div class="game-container">
   <h1>Ad Tycoon - Force Them to Watch!</h1>
   
@@ -369,14 +522,25 @@
       <small>Makes ads more effective</small>
     </div>
   </div>
-  
-  <div id="leaderboard"></div>
-  <div class="connected-players"></div>
+
+  <div class="multiplayer-container">
+    <h2>Multiplayer Zone</h2>
+    <div class="peer-id">Your ID: <span id="peer-id">Connecting...</span></div>
+    <div class="connection-controls">
+      <input type="text" id="connect-id" placeholder="Enter peer ID to connect">
+      <button id="connect-button">Connect</button>
+    </div>
+    <div class="chat-container">
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-input">
+        <input type="text" id="chat-input" placeholder="Type your message...">
+        <button id="send-button">Send</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-const room = new WebsimSocket();
-
 const game = {
   money: 0,
   revenuePerAd: 1,
@@ -420,66 +584,45 @@ const game = {
     return suffixIndex === 0 ? Math.floor(num) : num.toFixed(1) + suffixes[suffixIndex];
   },
 
-  async initMultiplayer() {
-    room.collection('playerState').subscribe((players) => {
-      this.updateLeaderboard(players);
-    });
-
-    await room.collection('playerState').create({
-      money: this.money,
-      revenuePerAd: this.revenuePerAd,
-      rage: this.rage,
-      username: room.party.client.username
-    });
-  },
-
-  async updatePlayerState() {
-    const players = await room.collection('playerState').getList();
-    const myState = players.find(p => p.username === room.party.client.username);
+  async gameInit() {
+    const loadingMeter = document.getElementById('loading-meter');
+    const loadingScreen = document.getElementById('loading-screen');
+    const gameContainer = document.querySelector('.game-container');
     
-    if (myState) {
-      await room.collection('playerState').update(myState.id, {
-        money: this.money,
-        revenuePerAd: this.revenuePerAd,
-        rage: this.rage,
-        username: room.party.client.username
-      });
+    // Simulate loading progress
+    let progress = 0;
+    const loadingInterval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 100) progress = 100;
+        loadingMeter.style.width = `${progress}%`;
+    }, 200);
+
+    try {
+        // Initialize core game systems
+        this.loadGame();
+        await this.multiplayerSetup();
+        
+        // Complete loading
+        clearInterval(loadingInterval);
+        loadingMeter.style.width = '100%';
+        
+        // Show game after short delay
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+            gameContainer.classList.add('visible');
+            
+            // Initialize remaining game systems
+            this.updateDisplay();
+            this.startAdCycle();
+            this.startRageCycle();
+            this.setupUpgrades();
+            this.startAutoSave();
+        }, 1000);
+    } catch (err) {
+        console.error('Game initialization error:', err);
+        alert('Failed to initialize game. Please refresh the page.');
     }
-  },
-
-  updateLeaderboard(players) {
-    let leaderboardDiv = document.getElementById('leaderboard');
-    if (!leaderboardDiv) {
-      leaderboardDiv = document.createElement('div');
-      leaderboardDiv.id = 'leaderboard';
-      document.querySelector('.stats').appendChild(leaderboardDiv);
-    }
-
-    const sortedPlayers = players.sort((a, b) => b.money - a.money);
-    
-    let html = '<h3>Top Ad Tycoons</h3>';
-    sortedPlayers.forEach(player => {
-      html += `
-        <div class="leaderboard-entry">
-          <img src="https://images.websim.ai/avatar/${player.username}" class="player-avatar">
-          <span>${player.username}</span>
-          <span>$${this.formatNumber(player.money)}</span>
-        </div>
-      `;
-    });
-    
-    leaderboardDiv.innerHTML = html;
-  },
-
-  async init() {
-    this.loadGame();
-    await this.initMultiplayer();  // Initialize multiplayer
-    this.updateDisplay();
-    this.startAdCycle();
-    this.startRageCycle();
-    this.setupUpgrades();
-    this.startAutoSave();
-  },
+},
 
   saveGame() {
     const saveData = {
@@ -572,9 +715,6 @@ const game = {
       localStorage.removeItem('adTycoonSave');
       location.reload();
     }
-
-    // Update multiplayer state
-    this.updatePlayerState();
   },
 
   setupUpgrades() {
@@ -614,26 +754,85 @@ const game = {
         this.updateDisplay();
       }
     };
+  },
+
+  multiplayerSetup() {
+    return new Promise((resolve) => {
+        this.peer = new Peer({
+            host: 'peerjs-server.herokuapp.com',
+            secure: true,
+            port: 443,
+            debug: 2
+        });
+        
+        this.connections = new Set();
+        this.playerList = new Set();
+        
+        this.peer.on('open', (id) => {
+            this.myId = id;
+            resolve();
+        });
+
+        this.peer.on('connection', (conn) => {
+            this.handleConnection(conn);
+        });
+
+        this.peer.on('error', (err) => {
+            console.error('PeerJS error:', err);
+            alert('Connection error. Please refresh the page.');
+        });
+    });
+},
+
+  handleConnection(conn) {
+    this.connections.add(conn);
+    
+    conn.on('open', () => {
+      this.addChatMessage('System', `Connected to ${conn.peer}`);
+    });
+
+    conn.on('data', (data) => {
+      if (data.type === 'chat') {
+        this.addChatMessage(data.peer, data.message);
+      }
+    });
+
+    conn.on('close', () => {
+      this.connections.delete(conn);
+      this.addChatMessage('System', `Disconnected from ${conn.peer}`);
+    });
+  },
+
+  sendChatMessage() {
+    const input = document.getElementById('chat-input');
+    const message = input.value.trim();
+    
+    if (message && this.connections.size > 0) {
+      const data = {
+        type: 'chat',
+        peer: this.peer.id,
+        message: message
+      };
+      
+      this.connections.forEach(conn => {
+        conn.send(data);
+      });
+      
+      this.addChatMessage('You', message);
+      input.value = '';
+    }
+  },
+
+  addChatMessage(sender, message) {
+    const chatMessages = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chat-message';
+    messageDiv.textContent = `${sender}: ${message}`;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 };
 
-room.party.subscribe((peers) => {
-  let connectedPlayers = document.querySelector('.connected-players');
-  if (!connectedPlayers) {
-    connectedPlayers = document.createElement('div');
-    connectedPlayers.className = 'connected-players';
-    document.body.appendChild(connectedPlayers);
-  }
-
-  let html = '';
-  for (const clientId in peers) {
-    const peer = peers[clientId];
-    html += `<img src="https://images.websim.ai/avatar/${peer.username}" 
-             class="player-icon" title="${peer.username}" />`;
-  }
-  connectedPlayers.innerHTML = html;
-});
-
-game.init();
+game.gameInit();
 </script>
 </body></html>
