@@ -387,38 +387,87 @@
         font-size: 0.9em;
     }
 
-    /* Add new styles for multiplayer elements */
-    .multiplayer-container {
-        background: rgba(0, 0, 0, 0.2);
-        padding: 20px;
-        border-radius: 15px;
-        margin: 20px 0;
+    /* Add new chat window styles */
+    .chat-window {
+        position: fixed;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 300px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 0 15px 15px 0;
+        transition: transform 0.3s ease;
+        z-index: 100;
         border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
     }
 
-    .chat-container {
-        background: rgba(0, 0, 0, 0.3);
+    .chat-window.collapsed {
+        transform: translateX(-290px) translateY(-50%);
+    }
+
+    .chat-toggle {
+        position: absolute;
+        right: -30px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 60px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 0 10px 10px 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: none;
+    }
+
+    .chat-toggle::after {
+        content: '→';
+        color: #00ff9d;
+        font-size: 20px;
+        transition: transform 0.3s;
+    }
+
+    .chat-window.collapsed .chat-toggle::after {
+        transform: rotate(180deg);
+    }
+
+    .chat-content {
         padding: 15px;
-        border-radius: 10px;
-        margin-top: 15px;
-        max-height: 200px;
-        overflow-y: auto;
+        height: 400px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-header {
+        color: #00ff9d;
+        font-size: 18px;
+        margin-bottom: 10px;
+        text-align: center;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .chat-messages {
+        flex: 1;
+        overflow-y: auto;
         margin-bottom: 10px;
+        padding-right: 5px;
     }
 
     .chat-message {
-        padding: 8px;
+        padding: 8px 12px;
         margin: 5px 0;
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.05);
+        word-wrap: break-word;
     }
 
     .chat-input {
         display: flex;
-        gap: 10px;
+        gap: 5px;
     }
 
     .chat-input input {
@@ -523,20 +572,17 @@
     </div>
   </div>
 
-  <div class="multiplayer-container">
-    <h2>Multiplayer Zone</h2>
-    <div class="peer-id">Your ID: <span id="peer-id">Connecting...</span></div>
-    <div class="connection-controls">
-      <input type="text" id="connect-id" placeholder="Enter peer ID to connect">
-      <button id="connect-button">Connect</button>
-    </div>
-    <div class="chat-container">
-      <div class="chat-messages" id="chat-messages"></div>
-      <div class="chat-input">
-        <input type="text" id="chat-input" placeholder="Type your message...">
-        <button id="send-button">Send</button>
+  <!-- Replace multiplayer container with new chat window -->
+  <div class="chat-window collapsed">
+      <div class="chat-toggle"></div>
+      <div class="chat-content">
+          <div class="chat-header">Game Chat</div>
+          <div class="chat-messages" id="chat-messages"></div>
+          <div class="chat-input">
+              <input type="text" id="chat-input" placeholder="Type your message...">
+              <button id="send-button">Send</button>
+          </div>
       </div>
-    </div>
   </div>
 </div>
 
@@ -759,17 +805,17 @@ const game = {
   multiplayerSetup() {
     return new Promise((resolve) => {
         this.peer = new Peer({
-            host: ' 0.peerjs.com',
+            host: '0.peerjs.com', // Updated server URL
             secure: true,
             port: 443,
             debug: 2
         });
         
         this.connections = new Set();
-        this.playerList = new Set();
         
         this.peer.on('open', (id) => {
-            this.myId = id;
+            this.addChatMessage('System', 'Connected to chat server');
+            this.setupChatWindow();
             resolve();
         });
 
@@ -779,8 +825,26 @@ const game = {
 
         this.peer.on('error', (err) => {
             console.error('PeerJS error:', err);
-            alert('Connection error. Please refresh the page.');
+            this.addChatMessage('System', 'Connection error occurred');
         });
+    });
+},
+
+  setupChatWindow() {
+    const chatWindow = document.querySelector('.chat-window');
+    const chatToggle = document.querySelector('.chat-toggle');
+    const sendButton = document.getElementById('send-button');
+    const chatInput = document.getElementById('chat-input');
+
+    chatToggle.addEventListener('click', () => {
+        chatWindow.classList.toggle('collapsed');
+    });
+
+    sendButton.addEventListener('click', () => this.sendChatMessage());
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            this.sendChatMessage();
+        }
     });
 },
 
