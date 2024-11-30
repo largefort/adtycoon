@@ -964,141 +964,171 @@ const game = {
 
   multiplayerSetup() {
     return new Promise((resolve) => {
-        this.peer = new Peer({
-            host: '0.peerjs.com', // Updated server URL
-            secure: true,
-            port: 443,
-            debug: 2
-        });
-        
-        this.connections = new Set();
-        
-        this.peer.on('open', (id) => {
-            this.addChatMessage('System', 'Connected to chat server');
-            this.setupChatWindow();
-            resolve();
-        });
+        try {
+            this.peer = new Peer({
+                host: '0.peerjs.com',
+                secure: true,
+                port: 443,
+                debug: 2
+            });
+            
+            this.connections = new Set();
+            
+            this.peer.on('open', (id) => {
+                // Only try to add chat message if chat system is initialized
+                if (document.getElementById('chat-messages')) {
+                    this.addChatMessage('System', 'Connected to chat server');
+                }
+                // Only setup chat window if elements exist
+                if (document.querySelector('.chat-window')) {
+                    this.setupChatWindow();
+                }
+                resolve();
+            });
 
-        this.peer.on('connection', (conn) => {
-            this.handleConnection(conn);
-        });
+            this.peer.on('connection', (conn) => {
+                this.handleConnection(conn);
+            });
 
-        this.peer.on('error', (err) => {
-            console.error('PeerJS error:', err);
-            this.addChatMessage('System', 'Connection error occurred');
-        });
-    });
-},
-
-  setupChatWindow() {
-    const chatWindow = document.querySelector('.chat-window');
-    const chatToggle = document.querySelector('.chat-toggle');
-    const sendButton = document.getElementById('send-button');
-    const chatInput = document.getElementById('chat-input');
-
-    chatToggle.addEventListener('click', () => {
-        chatWindow.classList.toggle('collapsed');
-    });
-
-    sendButton.addEventListener('click', () => this.sendChatMessage());
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            this.sendChatMessage();
+            this.peer.on('error', (err) => {
+                console.error('PeerJS error:', err);
+                if (document.getElementById('chat-messages')) {
+                    this.addChatMessage('System', 'Connection error occurred');
+                }
+            });
+        } catch (error) {
+            console.error('Error in multiplayerSetup:', error);
+            resolve(); // Resolve anyway to not block game initialization
         }
     });
 },
 
-  handleConnection(conn) {
-    this.connections.add(conn);
-    
-    conn.on('open', () => {
-      this.addChatMessage('System', `Connected to ${conn.peer}`);
-    });
+  setupChatWindow() {
+    try {
+        const chatWindow = document.querySelector('.chat-window');
+        const chatToggle = document.querySelector('.chat-toggle');
+        const sendButton = document.getElementById('send-button');
+        const chatInput = document.getElementById('chat-input');
 
-    conn.on('data', (data) => {
-      if (data.type === 'chat') {
-        this.addChatMessage(data.peer, data.message);
-      }
-    });
+        // Only setup events if elements exist
+        if (chatWindow && chatToggle) {
+            chatToggle.addEventListener('click', () => {
+                chatWindow.classList.toggle('collapsed');
+            });
+        }
 
-    conn.on('close', () => {
-      this.connections.delete(conn);
-      this.addChatMessage('System', `Disconnected from ${conn.peer}`);
-    });
-  },
+        if (sendButton && chatInput) {
+            sendButton.addEventListener('click', () => this.sendChatMessage());
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.sendChatMessage();
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error in setupChatWindow:', error);
+    }
+},
 
   sendChatMessage() {
-    const input = document.getElementById('chat-input');
-    const message = input.value.trim();
-    
-    if (message && this.connections.size > 0) {
-      const data = {
-        type: 'chat',
-        peer: this.peer.id,
-        message: message
-      };
-      
-      this.connections.forEach(conn => {
-        conn.send(data);
-      });
-      
-      this.addChatMessage('You', message);
-      input.value = '';
+    try {
+        const input = document.getElementById('chat-input');
+        if (!input) return;
+
+        const message = input.value.trim();
+        
+        if (message && this.connections.size > 0) {
+            const data = {
+                type: 'chat',
+                peer: this.peer.id,
+                message: message
+            };
+            
+            this.connections.forEach(conn => {
+                conn.send(data);
+            });
+            
+            this.addChatMessage('You', message);
+            input.value = '';
+        }
+    } catch (error) {
+        console.error('Error in sendChatMessage:', error);
     }
-  },
+},
 
   addChatMessage(sender, message) {
-    const chatMessages = document.getElementById('chat-messages');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'chat-message';
-    messageDiv.textContent = `${sender}: ${message}`;
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  },
+    try {
+        const chatMessages = document.getElementById('chat-messages');
+        if (!chatMessages) return;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message';
+        messageDiv.textContent = `${sender}: ${message}`;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    } catch (error) {
+        console.error('Error in addChatMessage:', error);
+    }
+},
 
   mobileInit() {
-    if (window.innerWidth <= 768) {
-      const hamburgerMenu = document.querySelector('.hamburger-menu');
-      const mobileSidebar = document.querySelector('.mobile-sidebar');
-      const closeButton = document.querySelector('.close-sidebar');
-      const overlay = document.querySelector('.mobile-overlay');
-      
-      const toggleSidebar = () => {
-          mobileSidebar.classList.toggle('active');
-          overlay.classList.toggle('active');
-      };
-      
-      hamburgerMenu.addEventListener('click', toggleSidebar);
-      closeButton.addEventListener('click', toggleSidebar);
-      overlay.addEventListener('click', toggleSidebar);
-      
-      // Handle sidebar menu items
-      const sidebarItems = document.querySelectorAll('.sidebar-item');
-      sidebarItems.forEach(item => {
-          item.addEventListener('click', () => {
-              const sectionType = item.querySelector('span').textContent.toLowerCase().replace(/\s+/g, '-');
-              
-              // Hide all sections
-              document.querySelectorAll('.content-section').forEach(section => {
-                  section.classList.remove('active');
-              });
-              
-              // Show selected section
-              if (sectionType === 'ad-upgrades') {
-                  document.getElementById('upgrades-section').classList.add('active');
-              } else if (sectionType === 'game-chat') {
-                  document.getElementById('chat-section').classList.add('active');
-              } else if (sectionType === 'game-controls') {
-                  document.getElementById('game-section').classList.add('active');
-              }
-              
-              // Close sidebar
-              mobileSidebar.classList.remove('active');
-              overlay.classList.remove('active');
-          });
-      });
+    try {
+        if (window.innerWidth <= 768) {
+            const hamburgerMenu = document.querySelector('.hamburger-menu');
+            const mobileSidebar = document.querySelector('.mobile-sidebar');
+            const closeButton = document.querySelector('.close-sidebar');
+            const overlay = document.querySelector('.mobile-overlay');
+            
+            if (!hamburgerMenu || !mobileSidebar || !closeButton || !overlay) {
+                console.warn('Mobile elements not found');
+                return;
+            }
+            
+            const toggleSidebar = () => {
+                mobileSidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            };
+            
+            hamburgerMenu.addEventListener('click', toggleSidebar);
+            closeButton.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+            
+            // Handle sidebar menu items
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const spanElement = item.querySelector('span');
+                    if (!spanElement) return;
+                    
+                    const sectionType = spanElement.textContent.toLowerCase().replace(/\s+/g, '-');
+                    
+                    // Hide all sections
+                    document.querySelectorAll('.content-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    
+                    // Show selected section
+                    const sections = {
+                        'ad-upgrades': 'upgrades-section',
+                        'game-chat': 'chat-section',
+                        'game-controls': 'game-section'
+                    };
+                    
+                    const targetSection = document.getElementById(sections[sectionType]);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                    
+                    // Close sidebar
+                    mobileSidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            });
+        }
+    } catch (error) {
+        console.error('Error in mobileInit:', error);
     }
-  }
+}
 };
 
 game.gameInit();
