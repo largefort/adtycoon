@@ -387,6 +387,15 @@
         font-size: 0.9em;
     }
 
+    /* Add content section styles */
+    .content-section {
+        display: none;
+    }
+
+    .content-section.active {
+        display: block;
+    }
+
     /* Update the chat window styles */
     .chat-window {
         position: fixed;
@@ -425,20 +434,6 @@
         padding: 10px;
         background: rgba(0, 0, 0, 0.2);
         border-radius: 10px;
-    }
-
-    /* Improve chat messages */
-    .chat-message {
-        padding: 8px;
-        margin: 4px 0;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 8px;
-        word-wrap: break-word;
-    }
-
-    .chat-message strong {
-        color: #00ff9d;
-        margin-right: 5px;
     }
 
     /* Improve chat toggle button */
@@ -502,6 +497,141 @@
         background: #00cc7d;
         transform: translateY(-2px);
     }
+
+    /* Add new mobile sidebar styles */
+    .mobile-sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 280px;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 2000;
+        transition: left 0.3s ease;
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+        display: none;
+    }
+
+    .mobile-sidebar.active {
+        left: 0;
+    }
+
+    .mobile-sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .mobile-sidebar-header h2 {
+        color: #00ff9d;
+        margin: 0;
+        font-size: 1.2em;
+    }
+
+    .close-sidebar {
+        color: #00ff9d;
+        font-size: 24px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+    }
+
+    .mobile-sidebar-menu {
+        padding: 20px;
+    }
+
+    .sidebar-item {
+        padding: 15px;
+        margin-bottom: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .sidebar-item i {
+        color: #00ff9d;
+        font-size: 20px;
+    }
+
+    .mobile-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(3px);
+        z-index: 1999;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .mobile-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+
+    /* Add hamburger menu button */
+    .hamburger-menu {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 10px;
+        z-index: 1500;
+        cursor: pointer;
+        display: none;
+    }
+
+    .hamburger-menu i {
+        color: #00ff9d;
+        font-size: 24px;
+    }
+
+    /* Update mobile-specific styles */
+    @media (max-width: 768px) {
+        .mobile-sidebar,
+        .hamburger-menu {
+            display: block;
+        }
+        
+        .game-container {
+            margin-top: 60px; /* Add space for hamburger menu */
+            padding: 10px;
+        }
+
+        .content-section {
+            margin-top: 20px;
+        }
+
+        /* Ensure chat window is properly positioned in mobile view */
+        #chat-section .chat-window {
+            position: relative;
+            left: 0;
+            transform: none;
+            width: 100%;
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        #chat-section .chat-window.collapsed {
+            transform: none;
+        }
+
+        #chat-section .chat-toggle {
+            display: none;
+        }
+    }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.4.7/dist/peerjs.min.js"></script>
 </head>
@@ -513,52 +643,105 @@
         <div id="loading-meter"></div>
     </div>
 </div>
+
+<div class="mobile-overlay"></div>
+<button class="hamburger-menu">
+    <i>☰</i>
+</button>
+<div class="mobile-sidebar">
+    <div class="mobile-sidebar-header">
+        <h2>Game Menu</h2>
+        <button class="close-sidebar">×</button>
+    </div>
+    <div class="mobile-sidebar-menu">
+        <div class="sidebar-item">
+            <i>🎮</i>
+            <span>Game Controls</span>
+        </div>
+        <div class="sidebar-item">
+            <i>⚡</i>
+            <span>Ad Upgrades</span>
+        </div>
+        <div class="sidebar-item">
+            <i>💬</i>
+            <span>Game Chat</span>
+        </div>
+        <div class="sidebar-item">
+            <i>📊</i>
+            <span>Stats</span>
+        </div>
+    </div>
+</div>
+
 <div class="game-container">
   <h1>Ad Tycoon - Force Them to Watch!</h1>
   
-  <div class="stats">
-    <h2>Revenue: $<span id="money">0</span></h2>
-    <h3>Revenue per Ad: $<span id="revenue-per-ad">1</span></h3>
-    <h3>Viewer Rage:</h3>
-    <div id="viewer-rage">
-      <div id="rage-meter"></div>
+  <!-- Add mobile navigation -->
+  <div class="mobile-nav">
+    <div class="nav-tab active" data-tab="game">
+      <i>🎮</i>
+      Game
+    </div>
+    <div class="nav-tab" data-tab="upgrades">
+      <i>⚡</i>
+      Ad Upgrades
+    </div>
+    <div class="nav-tab" data-tab="chat">
+      <i>💬</i>
+      Game Chat
     </div>
   </div>
 
-  <div class="tv-screen">
-    <div class="ad" id="current-ad">Welcome to TV!</div>
-  </div>
-
-  <div class="controls">
-    <div class="upgrade" id="better-ads" data-cost="$50">
-      Upgrade Ad Quality<br>
-      <small>Increases revenue per ad</small>
-    </div>
-    <div class="upgrade" id="faster-ads" data-cost="$100">
-      Increase Ad Frequency<br>
-      <small>Shows ads more often</small>
-    </div>
-    <div class="upgrade free-upgrade" id="rage-control" data-cost="FREE!">
-      Viewer Manipulation<br>
-      <small>Reduces viewer rage</small>
-    </div>
-    <div class="upgrade" id="subliminal" data-cost="$500">
-      Subliminal Messages<br>
-      <small>Makes ads more effective</small>
-    </div>
-  </div>
-
-  <!-- Replace multiplayer container with new chat window -->
-  <div class="chat-window collapsed">
-      <div class="chat-toggle"></div>
-      <div class="chat-content">
-          <div class="chat-header">Game Chat</div>
-          <div class="chat-messages" id="chat-messages"></div>
-          <div class="chat-input">
-              <input type="text" id="chat-input" placeholder="Type your message...">
-              <button id="send-button">Send</button>
-          </div>
+  <!-- Wrap existing content in sections -->
+  <div class="content-section active" id="game-section">
+    <div class="stats">
+      <h2>Revenue: $<span id="money">0</span></h2>
+      <h3>Revenue per Ad: $<span id="revenue-per-ad">1</span></h3>
+      <h3>Viewer Rage:</h3>
+      <div id="viewer-rage">
+        <div id="rage-meter"></div>
       </div>
+    </div>
+
+    <div class="tv-screen">
+      <div class="ad" id="current-ad">Welcome to TV!</div>
+    </div>
+  </div>
+
+  <div class="content-section" id="upgrades-section">
+    <div class="controls">
+      <div class="upgrade" id="better-ads" data-cost="$50">
+        Upgrade Ad Quality<br>
+        <small>Increases revenue per ad</small>
+      </div>
+      <div class="upgrade" id="faster-ads" data-cost="$100">
+        Increase Ad Frequency<br>
+        <small>Shows ads more often</small>
+      </div>
+      <div class="upgrade free-upgrade" id="rage-control" data-cost="FREE!">
+        Viewer Manipulation<br>
+        <small>Reduces viewer rage</small>
+      </div>
+      <div class="upgrade" id="subliminal" data-cost="$500">
+        Subliminal Messages<br>
+        <small>Makes ads more effective</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section" id="chat-section">
+    <!-- Replace multiplayer container with new chat window -->
+    <div class="chat-window collapsed">
+        <div class="chat-toggle"></div>
+        <div class="chat-content">
+            <div class="chat-header">Game Chat</div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input">
+                <input type="text" id="chat-input" placeholder="Type your message...">
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
   </div>
 </div>
 
@@ -639,6 +822,7 @@ const game = {
             this.startRageCycle();
             this.setupUpgrades();
             this.startAutoSave();
+            this.mobileInit(); // Initialize mobile navigation
         }, 1000);
     } catch (err) {
         console.error('Game initialization error:', err);
@@ -781,7 +965,7 @@ const game = {
   multiplayerSetup() {
     return new Promise((resolve) => {
         this.peer = new Peer({
-            host: '0.peerjs.com',
+            host: '0.peerjs.com', // Updated server URL
             secure: true,
             port: 443,
             debug: 2
@@ -790,10 +974,7 @@ const game = {
         this.connections = new Set();
         
         this.peer.on('open', (id) => {
-            console.log('My peer ID is: ' + id);
             this.addChatMessage('System', 'Connected to chat server');
-            // Auto-connect to existing peers
-            this.findAndConnectPeers();
             this.setupChatWindow();
             resolve();
         });
@@ -810,107 +991,59 @@ const game = {
 },
 
   setupChatWindow() {
-    // Setup chat window toggle
     const chatWindow = document.querySelector('.chat-window');
     const chatToggle = document.querySelector('.chat-toggle');
-    
+    const sendButton = document.getElementById('send-button');
+    const chatInput = document.getElementById('chat-input');
+
     chatToggle.addEventListener('click', () => {
         chatWindow.classList.toggle('collapsed');
-        // Update arrow direction
-        chatToggle.style.transform = chatWindow.classList.contains('collapsed') 
-            ? 'translateY(-50%) rotate(0deg)' 
-            : 'translateY(-50%) rotate(180deg)';
     });
 
-    // Setup chat input handling
-    const chatInput = document.getElementById('chat-input');
-    const sendButton = document.getElementById('send-button');
-
-    const sendMessage = () => {
-        const message = chatInput.value.trim();
-        if (message) {
-            this.sendChatMessage();
-        }
-    };
-
-    // Send on button click
-    sendButton.addEventListener('click', sendMessage);
-
-    // Send on Enter key
+    sendButton.addEventListener('click', () => this.sendChatMessage());
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            sendMessage();
+            this.sendChatMessage();
         }
     });
-
-    // Initial arrow state
-    chatToggle.style.transform = 'translateY(-50%) rotate(0deg)';
-},
-
-  findAndConnectPeers() {
-    fetch('https://0.peerjs.com/peerjs/peers')
-    .then(response => response.json())
-    .then(peers => {
-        peers.forEach(peerId => {
-            if (peerId !== this.peer.id) {
-                const conn = this.peer.connect(peerId);
-                this.handleConnection(conn);
-            }
-        });
-    })
-    .catch(err => console.error('Error finding peers:', err));
 },
 
   handleConnection(conn) {
-    if (!this.connections.has(conn)) {
-        this.connections.add(conn);
-        
-        conn.on('open', () => {
-            console.log('Connected to:', conn.peer);
-            this.addChatMessage('System', 'New player joined the chat');
-        });
+    this.connections.add(conn);
+    
+    conn.on('open', () => {
+      this.addChatMessage('System', `Connected to ${conn.peer}`);
+    });
 
-        conn.on('data', (data) => {
-            if (data.type === 'chat') {
-                this.addChatMessage(data.sender, data.message);
-            }
-        });
+    conn.on('data', (data) => {
+      if (data.type === 'chat') {
+        this.addChatMessage(data.peer, data.message);
+      }
+    });
 
-        conn.on('close', () => {
-            this.connections.delete(conn);
-            this.addChatMessage('System', 'A player left the chat');
-        });
-
-        conn.on('error', (err) => {
-            console.error('Connection error:', err);
-            this.connections.delete(conn);
-        });
-    }
-},
+    conn.on('close', () => {
+      this.connections.delete(conn);
+      this.addChatMessage('System', `Disconnected from ${conn.peer}`);
+    });
+  },
 
   sendChatMessage() {
     const input = document.getElementById('chat-input');
     const message = input.value.trim();
     
-    if (message) {
-        const chatData = {
-            type: 'chat',
-            sender: 'Player ' + this.peer.id.substr(0, 4),
-            message: message
-        };
-        
-        // Broadcast to all connections
-        this.connections.forEach(conn => {
-            if (conn.open) {
-                conn.send(chatData);
-            }
-        });
-        
-        // Show own message
-        this.addChatMessage('You', message);
-        
-        // Clear input
-        input.value = '';
+    if (message && this.connections.size > 0) {
+      const data = {
+        type: 'chat',
+        peer: this.peer.id,
+        message: message
+      };
+      
+      this.connections.forEach(conn => {
+        conn.send(data);
+      });
+      
+      this.addChatMessage('You', message);
+      input.value = '';
     }
   },
 
@@ -918,9 +1051,53 @@ const game = {
     const chatMessages = document.getElementById('chat-messages');
     const messageDiv = document.createElement('div');
     messageDiv.className = 'chat-message';
-    messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    messageDiv.textContent = `${sender}: ${message}`;
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+  },
+
+  mobileInit() {
+    if (window.innerWidth <= 768) {
+      const hamburgerMenu = document.querySelector('.hamburger-menu');
+      const mobileSidebar = document.querySelector('.mobile-sidebar');
+      const closeButton = document.querySelector('.close-sidebar');
+      const overlay = document.querySelector('.mobile-overlay');
+      
+      const toggleSidebar = () => {
+          mobileSidebar.classList.toggle('active');
+          overlay.classList.toggle('active');
+      };
+      
+      hamburgerMenu.addEventListener('click', toggleSidebar);
+      closeButton.addEventListener('click', toggleSidebar);
+      overlay.addEventListener('click', toggleSidebar);
+      
+      // Handle sidebar menu items
+      const sidebarItems = document.querySelectorAll('.sidebar-item');
+      sidebarItems.forEach(item => {
+          item.addEventListener('click', () => {
+              const sectionType = item.querySelector('span').textContent.toLowerCase().replace(/\s+/g, '-');
+              
+              // Hide all sections
+              document.querySelectorAll('.content-section').forEach(section => {
+                  section.classList.remove('active');
+              });
+              
+              // Show selected section
+              if (sectionType === 'ad-upgrades') {
+                  document.getElementById('upgrades-section').classList.add('active');
+              } else if (sectionType === 'game-chat') {
+                  document.getElementById('chat-section').classList.add('active');
+              } else if (sectionType === 'game-controls') {
+                  document.getElementById('game-section').classList.add('active');
+              }
+              
+              // Close sidebar
+              mobileSidebar.classList.remove('active');
+              overlay.classList.remove('active');
+          });
+      });
+    }
   }
 };
 
