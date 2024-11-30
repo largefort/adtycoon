@@ -387,25 +387,16 @@
         font-size: 0.9em;
     }
 
-    /* Add content section styles */
-    .content-section {
-        display: none;
-    }
-
-    .content-section.active {
-        display: block;
-    }
-
-    /* Update the chat window styles */
+    /* Update chat window styles for better positioning and compactness */
     .chat-window {
         position: fixed;
         left: 0;
         top: 50%;
         transform: translateY(-50%);
-        width: 300px;
-        height: auto; /* Remove fixed height */
-        max-height: 80vh; /* Add max height */
-        background: rgba(0, 0, 0, 0.8);
+        width: 280px; /* Slightly reduced width */
+        height: auto;
+        max-height: 70vh; /* Reduced max height */
+        background: rgba(0, 0, 0, 0.9); /* Darker background */
         border-radius: 0 15px 15px 0;
         transition: transform 0.3s ease;
         z-index: 100;
@@ -415,222 +406,112 @@
     }
 
     .chat-window.collapsed {
-        transform: translateX(-290px) translateY(-50%);
+        transform: translateX(-270px) translateY(-50%);
     }
 
     .chat-content {
-        padding: 15px;
-        height: 500px; /* Increase height */
-        max-height: calc(80vh - 30px);
+        padding: 10px; /* Reduced padding */
+        height: auto;
+        max-height: calc(70vh - 20px);
         display: flex;
         flex-direction: column;
+        gap: 8px; /* Added gap between elements */
+    }
+
+    .chat-header {
+        font-size: 14px;
+        color: #00ff9d;
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .chat-messages {
         flex: 1;
+        height: 350px; /* Fixed height */
         overflow-y: auto;
-        margin-bottom: 10px;
-        padding-right: 5px;
-        padding: 10px;
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 10px;
+        padding: 8px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        font-size: 13px; /* Smaller font */
+        line-height: 1.4;
     }
 
-    /* Improve chat toggle button */
+    .chat-message {
+        margin-bottom: 6px;
+        padding: 4px 8px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+    }
+
     .chat-toggle {
         position: absolute;
-        right: -40px; /* Increase width */
+        right: -30px;
         top: 50%;
         transform: translateY(-50%);
-        width: 40px; /* Increase width */
-        height: 80px; /* Increase height */
-        background: rgba(0, 0, 0, 0.8);
-        border-radius: 0 10px 10px 0;
+        width: 30px;
+        height: 60px;
+        background: rgba(0, 0, 0, 0.9);
+        border-radius: 0 8px 8px 0;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-left: none;
-        box-shadow: 5px 0 10px rgba(0, 0, 0, 0.2);
     }
 
-    .chat-toggle::after {
-        content: '→';
-        color: #00ff9d;
-        font-size: 24px; /* Increase size */
-        transition: transform 0.3s;
-    }
-
-    /* Improve chat input styling */
     .chat-input {
         display: flex;
-        gap: 8px;
-        padding: 10px;
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 10px;
-        margin-top: 10px;
+        gap: 6px;
+        padding: 8px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
     }
 
     .chat-input input {
         flex: 1;
-        padding: 10px;
-        border-radius: 5px;
+        padding: 6px 10px;
+        border-radius: 4px;
         border: 1px solid rgba(255, 255, 255, 0.1);
         background: rgba(0, 0, 0, 0.2);
         color: #fff;
-        font-size: 14px;
+        font-size: 13px;
     }
 
     .chat-input button {
-        padding: 10px 20px;
-        border-radius: 5px;
+        padding: 6px 12px;
+        border-radius: 4px;
         border: none;
         background: #00ff9d;
         color: #1a1a2e;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
+        font-size: 13px;
         font-weight: bold;
     }
 
     .chat-input button:hover {
         background: #00cc7d;
-        transform: translateY(-2px);
+        transform: translateY(-1px);
     }
 
-    /* Add new mobile sidebar styles */
-    .mobile-sidebar {
-        position: fixed;
-        top: 0;
-        left: -280px;
-        width: 280px;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.95);
-        backdrop-filter: blur(10px);
-        z-index: 2000;
-        transition: left 0.3s ease;
-        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
-        display: none;
+    /* Custom scrollbar for chat messages */
+    .chat-messages::-webkit-scrollbar {
+        width: 6px;
     }
 
-    .mobile-sidebar.active {
-        left: 0;
+    .chat-messages::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
     }
 
-    .mobile-sidebar-header {
-        padding: 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: rgba(0, 255, 157, 0.3);
+        border-radius: 3px;
     }
 
-    .mobile-sidebar-header h2 {
-        color: #00ff9d;
-        margin: 0;
-        font-size: 1.2em;
-    }
-
-    .close-sidebar {
-        color: #00ff9d;
-        font-size: 24px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 5px;
-    }
-
-    .mobile-sidebar-menu {
-        padding: 20px;
-    }
-
-    .sidebar-item {
-        padding: 15px;
-        margin-bottom: 10px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .sidebar-item i {
-        color: #00ff9d;
-        font-size: 20px;
-    }
-
-    .mobile-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(3px);
-        z-index: 1999;
-        display: none;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .mobile-overlay.active {
-        display: block;
-        opacity: 1;
-    }
-
-    /* Add hamburger menu button */
-    .hamburger-menu {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: rgba(0, 0, 0, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 10px;
-        z-index: 1500;
-        cursor: pointer;
-        display: none;
-    }
-
-    .hamburger-menu i {
-        color: #00ff9d;
-        font-size: 24px;
-    }
-
-    /* Update mobile-specific styles */
-    @media (max-width: 768px) {
-        .mobile-sidebar,
-        .hamburger-menu {
-            display: block;
-        }
-        
-        .game-container {
-            margin-top: 60px; /* Add space for hamburger menu */
-            padding: 10px;
-        }
-
-        .content-section {
-            margin-top: 20px;
-        }
-
-        /* Ensure chat window is properly positioned in mobile view */
-        #chat-section .chat-window {
-            position: relative;
-            left: 0;
-            transform: none;
-            width: 100%;
-            max-width: 100%;
-            border-radius: 10px;
-        }
-
-        #chat-section .chat-window.collapsed {
-            transform: none;
-        }
-
-        #chat-section .chat-toggle {
-            display: none;
-        }
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 255, 157, 0.5);
     }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.4.7/dist/peerjs.min.js"></script>
@@ -643,105 +524,52 @@
         <div id="loading-meter"></div>
     </div>
 </div>
-
-<div class="mobile-overlay"></div>
-<button class="hamburger-menu">
-    <i>☰</i>
-</button>
-<div class="mobile-sidebar">
-    <div class="mobile-sidebar-header">
-        <h2>Game Menu</h2>
-        <button class="close-sidebar">×</button>
-    </div>
-    <div class="mobile-sidebar-menu">
-        <div class="sidebar-item">
-            <i>🎮</i>
-            <span>Game Controls</span>
-        </div>
-        <div class="sidebar-item">
-            <i>⚡</i>
-            <span>Ad Upgrades</span>
-        </div>
-        <div class="sidebar-item">
-            <i>💬</i>
-            <span>Game Chat</span>
-        </div>
-        <div class="sidebar-item">
-            <i>📊</i>
-            <span>Stats</span>
-        </div>
-    </div>
-</div>
-
 <div class="game-container">
   <h1>Ad Tycoon - Force Them to Watch!</h1>
   
-  <!-- Add mobile navigation -->
-  <div class="mobile-nav">
-    <div class="nav-tab active" data-tab="game">
-      <i>🎮</i>
-      Game
-    </div>
-    <div class="nav-tab" data-tab="upgrades">
-      <i>⚡</i>
-      Ad Upgrades
-    </div>
-    <div class="nav-tab" data-tab="chat">
-      <i>💬</i>
-      Game Chat
+  <div class="stats">
+    <h2>Revenue: $<span id="money">0</span></h2>
+    <h3>Revenue per Ad: $<span id="revenue-per-ad">1</span></h3>
+    <h3>Viewer Rage:</h3>
+    <div id="viewer-rage">
+      <div id="rage-meter"></div>
     </div>
   </div>
 
-  <!-- Wrap existing content in sections -->
-  <div class="content-section active" id="game-section">
-    <div class="stats">
-      <h2>Revenue: $<span id="money">0</span></h2>
-      <h3>Revenue per Ad: $<span id="revenue-per-ad">1</span></h3>
-      <h3>Viewer Rage:</h3>
-      <div id="viewer-rage">
-        <div id="rage-meter"></div>
-      </div>
-    </div>
+  <div class="tv-screen">
+    <div class="ad" id="current-ad">Welcome to TV!</div>
+  </div>
 
-    <div class="tv-screen">
-      <div class="ad" id="current-ad">Welcome to TV!</div>
+  <div class="controls">
+    <div class="upgrade" id="better-ads" data-cost="$50">
+      Upgrade Ad Quality<br>
+      <small>Increases revenue per ad</small>
+    </div>
+    <div class="upgrade" id="faster-ads" data-cost="$100">
+      Increase Ad Frequency<br>
+      <small>Shows ads more often</small>
+    </div>
+    <div class="upgrade free-upgrade" id="rage-control" data-cost="FREE!">
+      Viewer Manipulation<br>
+      <small>Reduces viewer rage</small>
+    </div>
+    <div class="upgrade" id="subliminal" data-cost="$500">
+      Subliminal Messages<br>
+      <small>Makes ads more effective</small>
     </div>
   </div>
 
-  <div class="content-section" id="upgrades-section">
-    <div class="controls">
-      <div class="upgrade" id="better-ads" data-cost="$50">
-        Upgrade Ad Quality<br>
-        <small>Increases revenue per ad</small>
+  <!-- Replace multiplayer container with new chat window -->
+  <div class="chat-window collapsed">
+      <div class="chat-toggle"></div>
+      <div class="chat-content">
+          <div class="chat-header">Game Chat</div>
+          <div class="chat-messages" id="chat-messages"></div>
+          <div class="chat-input">
+              <input type="text" id="chat-input" placeholder="Type your message...">
+              <button id="send-button">Send</button>
+          </div>
       </div>
-      <div class="upgrade" id="faster-ads" data-cost="$100">
-        Increase Ad Frequency<br>
-        <small>Shows ads more often</small>
-      </div>
-      <div class="upgrade free-upgrade" id="rage-control" data-cost="FREE!">
-        Viewer Manipulation<br>
-        <small>Reduces viewer rage</small>
-      </div>
-      <div class="upgrade" id="subliminal" data-cost="$500">
-        Subliminal Messages<br>
-        <small>Makes ads more effective</small>
-      </div>
-    </div>
-  </div>
-
-  <div class="content-section" id="chat-section">
-    <!-- Replace multiplayer container with new chat window -->
-    <div class="chat-window collapsed">
-        <div class="chat-toggle"></div>
-        <div class="chat-content">
-            <div class="chat-header">Game Chat</div>
-            <div class="chat-messages" id="chat-messages"></div>
-            <div class="chat-input">
-                <input type="text" id="chat-input" placeholder="Type your message...">
-                <button id="send-button">Send</button>
-            </div>
-        </div>
-    </div>
   </div>
 </div>
 
@@ -822,7 +650,6 @@ const game = {
             this.startRageCycle();
             this.setupUpgrades();
             this.startAutoSave();
-            this.mobileInit(); // Initialize mobile navigation
         }, 1000);
     } catch (err) {
         console.error('Game initialization error:', err);
@@ -964,171 +791,130 @@ const game = {
 
   multiplayerSetup() {
     return new Promise((resolve) => {
-        try {
-            this.peer = new Peer({
-                host: '0.peerjs.com',
-                secure: true,
-                port: 443,
-                debug: 2
-            });
-            
-            this.connections = new Set();
-            
-            this.peer.on('open', (id) => {
-                // Only try to add chat message if chat system is initialized
-                if (document.getElementById('chat-messages')) {
-                    this.addChatMessage('System', 'Connected to chat server');
-                }
-                // Only setup chat window if elements exist
-                if (document.querySelector('.chat-window')) {
-                    this.setupChatWindow();
-                }
-                resolve();
-            });
-
-            this.peer.on('connection', (conn) => {
-                this.handleConnection(conn);
-            });
-
-            this.peer.on('error', (err) => {
-                console.error('PeerJS error:', err);
-                if (document.getElementById('chat-messages')) {
-                    this.addChatMessage('System', 'Connection error occurred');
-                }
-            });
-        } catch (error) {
-            console.error('Error in multiplayerSetup:', error);
-            resolve(); // Resolve anyway to not block game initialization
-        }
-    });
-},
-
-  setupChatWindow() {
-    try {
-        const chatWindow = document.querySelector('.chat-window');
-        const chatToggle = document.querySelector('.chat-toggle');
-        const sendButton = document.getElementById('send-button');
-        const chatInput = document.getElementById('chat-input');
-
-        // Only setup events if elements exist
-        if (chatWindow && chatToggle) {
-            chatToggle.addEventListener('click', () => {
-                chatWindow.classList.toggle('collapsed');
-            });
-        }
-
-        if (sendButton && chatInput) {
-            sendButton.addEventListener('click', () => this.sendChatMessage());
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    this.sendChatMessage();
-                }
-            });
-        }
-    } catch (error) {
-        console.error('Error in setupChatWindow:', error);
-    }
-},
-
-  sendChatMessage() {
-    try {
-        const input = document.getElementById('chat-input');
-        if (!input) return;
-
-        const message = input.value.trim();
+        // Generate a random id for the player
+        const randomId = Math.random().toString(36).substring(7);
         
-        if (message && this.connections.size > 0) {
-            const data = {
-                type: 'chat',
-                peer: this.peer.id,
-                message: message
-            };
+        this.peer = new Peer(randomId, {
+            host: '0.peerjs.com',
+            secure: true,
+            port: 443,
+            debug: 2
+        });
+        
+        this.connections = new Set();
+        
+        this.peer.on('open', (id) => {
+            this.addChatMessage('System', 'Connected to chat server');
             
-            this.connections.forEach(conn => {
-                conn.send(data);
-            });
-            
-            this.addChatMessage('You', message);
-            input.value = '';
-        }
-    } catch (error) {
-        console.error('Error in sendChatMessage:', error);
-    }
-},
-
-  addChatMessage(sender, message) {
-    try {
-        const chatMessages = document.getElementById('chat-messages');
-        if (!chatMessages) return;
-
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'chat-message';
-        messageDiv.textContent = `${sender}: ${message}`;
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    } catch (error) {
-        console.error('Error in addChatMessage:', error);
-    }
-},
-
-  mobileInit() {
-    try {
-        if (window.innerWidth <= 768) {
-            const hamburgerMenu = document.querySelector('.hamburger-menu');
-            const mobileSidebar = document.querySelector('.mobile-sidebar');
-            const closeButton = document.querySelector('.close-sidebar');
-            const overlay = document.querySelector('.mobile-overlay');
-            
-            if (!hamburgerMenu || !mobileSidebar || !closeButton || !overlay) {
-                console.warn('Mobile elements not found');
-                return;
-            }
-            
-            const toggleSidebar = () => {
-                mobileSidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-            };
-            
-            hamburgerMenu.addEventListener('click', toggleSidebar);
-            closeButton.addEventListener('click', toggleSidebar);
-            overlay.addEventListener('click', toggleSidebar);
-            
-            // Handle sidebar menu items
-            const sidebarItems = document.querySelectorAll('.sidebar-item');
-            sidebarItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    const spanElement = item.querySelector('span');
-                    if (!spanElement) return;
-                    
-                    const sectionType = spanElement.textContent.toLowerCase().replace(/\s+/g, '-');
-                    
-                    // Hide all sections
-                    document.querySelectorAll('.content-section').forEach(section => {
-                        section.classList.remove('active');
-                    });
-                    
-                    // Show selected section
-                    const sections = {
-                        'ad-upgrades': 'upgrades-section',
-                        'game-chat': 'chat-section',
-                        'game-controls': 'game-section'
-                    };
-                    
-                    const targetSection = document.getElementById(sections[sectionType]);
-                    if (targetSection) {
-                        targetSection.classList.add('active');
+            // Listen for other peers
+            this.peer.listAllPeers((peers) => {
+                peers.forEach(peerId => {
+                    if (peerId !== id) {
+                        const conn = this.peer.connect(peerId);
+                        this.handleConnection(conn);
                     }
-                    
-                    // Close sidebar
-                    mobileSidebar.classList.remove('active');
-                    overlay.classList.remove('active');
                 });
             });
-        }
-    } catch (error) {
-        console.error('Error in mobileInit:', error);
-    }
-}
+            
+            this.setupChatWindow();
+            resolve();
+        });
+
+        this.peer.on('connection', (conn) => {
+            this.handleConnection(conn);
+        });
+
+        this.peer.on('error', (err) => {
+            console.error('PeerJS error:', err);
+            this.addChatMessage('System', 'Connection error occurred');
+        });
+    });
+  },
+
+  addChatMessage(sender, message) {
+      const chatMessages = document.getElementById('chat-messages');
+      const messageElement = document.createElement('div');
+      messageElement.className = 'chat-message';
+      messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+  },
+
+  setupChatWindow() {
+      const chatToggle = document.querySelector('.chat-toggle');
+      const chatWindow = document.querySelector('.chat-window');
+      const chatInput = document.getElementById('chat-input');
+      const sendButton = document.getElementById('send-button');
+
+      // Toggle chat window
+      chatToggle.addEventListener('click', () => {
+          chatWindow.classList.toggle('collapsed');
+      });
+
+      // Send message on button click
+      sendButton.addEventListener('click', () => {
+          this.sendChatMessage();
+      });
+
+      // Send message on Enter key
+      chatInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+              this.sendChatMessage();
+          }
+      });
+  },
+
+  sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      
+      if (message) {
+          const data = {
+              type: 'chat',
+              peer: this.peer.id,
+              message: message
+          };
+          
+          // Send to all connected peers
+          this.connections.forEach(conn => {
+              if (conn.open) {
+                  conn.send(data);
+              }
+          });
+          
+          // Show own message
+          this.addChatMessage('You', message);
+          input.value = '';
+          
+          // If no connections yet, show system message
+          if (this.connections.size === 0) {
+              this.addChatMessage('System', 'No other players connected yet. Your message will be visible to others when they join.');
+          }
+      }
+  },
+
+  handleConnection(conn) {
+      conn.on('open', () => {
+          this.connections.add(conn);
+          this.addChatMessage('System', `Player connected`);
+      });
+
+      conn.on('data', (data) => {
+          if (data.type === 'chat') {
+              this.addChatMessage('Player', data.message);
+          }
+      });
+
+      conn.on('close', () => {
+          this.connections.delete(conn);
+          this.addChatMessage('System', `Player disconnected`);
+      });
+
+      conn.on('error', (err) => {
+          console.error('Connection error:', err);
+          this.connections.delete(conn);
+      });
+  }
 };
 
 game.gameInit();
